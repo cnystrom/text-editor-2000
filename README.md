@@ -18,6 +18,9 @@ not include the magazine scans or the article text.
 | `te2000.tap` | Tape image built from `TE2000.BAS`. It auto-starts at line 9830. |
 | `TE2000-1.0.1.BAS` | v1.0.1: the published listing plus one added line, `8 GO TO 9830`. |
 | `te2000-1.0.1.tap` | Tape image built from `TE2000-1.0.1.BAS`, with no auto-start. `LOAD ""` and then `RUN`. |
+| `TE2000-1.0.2.BAS` | v1.0.2: v1.0.1 with the three known bugs fixed (lines 860, 8540, 8590) and version-note REMs 9991–9992. |
+| `te2000-1.0.2.tap` | Tape image built from `TE2000-1.0.2.BAS`, with no auto-start. `LOAD ""` and then `RUN`. |
+| `CHANGES.md` | What changed in each version. |
 | `TRANSCRIPTION-NOTES.md` | How the listing was transcribed, the readings that were uncertain, and how it differs from the later 2.2 tape. |
 
 ## Features
@@ -69,6 +72,9 @@ up the text array (`DIM t$(1)`) and width, and then jump to the menu.
 
 ## Versions
 
+See [CHANGES.md](CHANGES.md) for a summary of every version. **v1.0.2 is the
+recommended version to use.**
+
 ### v1.0: as published (`TE2000.BAS`, `te2000.tap`)
 
 This is the listing from T-S Horizons No. 13, unchanged. It must be started
@@ -104,25 +110,39 @@ With v1.0.1, `RUN` starts the program cleanly. `RUN` (like `GO TO 9830`)
 still clears any text in memory, so after a break use `GO TO 800` to get back
 to the menu with your text.
 
+### v1.0.2: three bug fixes (`TE2000-1.0.2.BAS`, `te2000-1.0.2.tap`)
+
+This is v1.0.1 with the three bugs found while testing in Fuse fixed. Chris
+Nystrom approved these fixes. Nothing else changes, apart from two
+version-note REMs after `9990 STOP` that are never executed.
+
+| Line | Before (v1.0 / v1.0.1) | After (v1.0.2) |
+|------|------------------------|----------------|
+| 860 | `IF s$<CHR$ 48 OR s$>CHR$ 58 THEN GO TO 720` | `IF s$<CHR$ 48 OR s$>CHR$ 57 THEN GO TO 720` |
+| 8540 | `IF a$<CHR$ 48 OR a$>CHR$ 56 THEN GO TO 8500` | `IF a$<CHR$ 48 OR a$>CHR$ 55 THEN GO TO 8500` |
+| 8590 | `IF b$<CHR$ 48 OR a$>CHR$ 56 THEN GO TO 8550` | `IF b$<CHR$ 48 OR b$>CHR$ 55 THEN GO TO 8550` |
+| 9991 | (none) | `REM v1.0.1 (2026): added line 8 GO TO 9830 so RUN works` |
+| 9992 | (none) | `REM v1.0.2 (2026): fixed lines 860, 8540, 8590 (: key, colour 8, b$ check)` |
+
 Building:
 
 ```
 zmakebas -a 9830 -n TE2000 -o te2000.tap       TE2000.BAS        # v1.0
 zmakebas         -n TE2000 -o te2000-1.0.1.tap TE2000-1.0.1.BAS  # v1.0.1
+zmakebas         -n TE2000 -o te2000-1.0.2.tap TE2000-1.0.2.BAS  # v1.0.2
 ```
 
-## Known bugs in the published listing (not fixed)
+## Known bugs in the published listing
 
-These were found while testing this transcription in Fuse. They are present
-in both v1.0 and v1.0.1, which keep the published code unchanged apart from
-line 8. Suggested one-character fixes are listed but not applied.
+These were found while testing this transcription in Fuse. v1.0 and v1.0.1
+keep them as published. **The first three are fixed in v1.0.2.**
 
-| Line(s) | What happens | Suggested fix |
-|---------|--------------|---------------|
-| 860 | `s$>CHR$ 58` lets `:` (CHR$ 58) through to `890 GO TO VAL s$*1000`. Pressing `:` at the menu stops with `C Nonsense in BASIC, 890:1`. | `CHR$ 57` |
-| 8540, 8590 | The colour range check accepts `8` (CHR$ 56). Choosing border 8 stops with `K Invalid colour, 8600:1`. | `CHR$ 55` |
-| 8590 | The upper-bound test checks `a$` (the border key) instead of `b$` (the paper key). A letter for the paper colour gets through and stops with `2 Variable not found, 8600:2`. The later 2.2 tape has `b$`. | `b$>CHR$ …` |
-| 410 | `GO TO 630` points at a line that does not exist, so BASIC falls through to 710/720 (the menu) from inside the `GO SUB 20` editor routine. Each time, a GO SUB return address is left on the stack. This was found by reading only and is harmless in normal use. | none needed |
+| Line(s) | What happens | Status |
+|---------|--------------|--------|
+| 860 | `s$>CHR$ 58` lets `:` (CHR$ 58) through to `890 GO TO VAL s$*1000`. Pressing `:` at the menu stops with `C Nonsense in BASIC, 890:1`. | **Fixed in 1.0.2** (`CHR$ 57`) |
+| 8540, 8590 | The colour range check accepts `8` (CHR$ 56). Choosing border 8 stops with `K Invalid colour, 8600:1`. | **Fixed in 1.0.2** (`CHR$ 55`) |
+| 8590 | The upper-bound test checks `a$` (the border key) instead of `b$` (the paper key). A letter for the paper colour gets through and stops with `2 Variable not found, 8600:2`. The later 2.2 tape has `b$`. | **Fixed in 1.0.2** (`b$`) |
+| 410 | `GO TO 630` points at a line that does not exist, so BASIC falls through to 710/720 (the menu) from inside the `GO SUB 20` editor routine. Each time, a GO SUB return address is left on the stack. This was found by reading only and is harmless in normal use. | Not changed |
 
 After any of these errors, `GO TO 800` returns to the menu with the text kept.
 
