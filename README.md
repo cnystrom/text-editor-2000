@@ -86,3 +86,7 @@ up the text array (`DIM t$(1)`) and width, and then jump to the menu.
   Nystrom's work, so they are not included. See
   <https://www.timexsinclair.com/computer_media/textype/index.html> and
   <https://www.timexsinclair.com/indiv/christopher-nystrom/index.html>.
+
+## License
+
+Released into the public domain by Chris Nystrom in 2026 (see LICENSE).
