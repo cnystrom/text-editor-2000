@@ -1,0 +1,6 @@
+# BASIC listings are plain ASCII text in zmakebas format; keep LF endings.
+*.BAS text eol=lf
+*.bas text eol=lf
+*.md  text eol=lf
+# Spectrum / TS2068 tape images are binary.
+*.tap binary
